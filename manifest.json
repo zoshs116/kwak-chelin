@@ -1,16 +1,17 @@
 {
-  "name": "과기대 맛집 가이드",
-  "short_name": "과기대맛집",
+  "name": "곽슐랭 - 과기대 맛집 가이드",
+  "short_name": "곽슐랭",
   "description": "과기대 학우들을 위한 실시간 맛집 커뮤니티",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1046/1046747.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
