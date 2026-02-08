@@ -399,7 +399,7 @@ window.startSpinWheel = () => {
             canvas.style.transform = `rotate(${randomRotation}deg)`;
             setTimeout(() => {
                 isSpinning = false;
-                const winningIndex = Math.floor(((360 - (randomRotation % 360) + 360) % 360) / (360 / 8));
+                const winningIndex = Math.floor(((270 - (randomRotation % 360) + 360) % 360) / (360 / 8));
                 const winner = items[winningIndex];
                 const wrapper = document.getElementById('wheelResultWrapper');
                 wrapper.style.display = 'block';
