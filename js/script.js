@@ -434,10 +434,26 @@ window.playRPS = () => {
 window.spinSoju = () => {
     const bottle = document.getElementById('sojuBottle');
     const result = document.getElementById('sojuResult');
+    const spinBtn = document.getElementById('sojuSpinBtn');
+    
     result.style.display = 'none';
-    const randomDegree = Math.floor(Math.random() * 360) + 3600;
-    bottle.style.transform = `rotate(${randomDegree}deg)`;
-    setTimeout(() => { result.style.display = 'block'; }, 10000);
+    if (spinBtn) spinBtn.style.display = 'none'; // 도는 동안 버튼 숨기기
+
+    // 1. 회전 초기화 (애니메이션 효과 없이 즉시 0도로 복구)
+    bottle.style.transition = 'none';
+    bottle.style.transform = 'rotate(0deg)';
+
+    // 2. 아주 짧은 지연(0.05초) 후 다시 돌리기 시작
+    setTimeout(() => {
+        bottle.style.transition = 'transform 8s cubic-bezier(0.15, 0, 0.15, 1)';
+        const randomDegree = Math.floor(Math.random() * 360) + 3600;
+        bottle.style.transform = `rotate(${randomDegree}deg)`;
+    }, 50);
+
+    // 3. 8초(회전 완료 시간) 후 결과창(벌칙) 표시
+    setTimeout(() => { 
+        result.style.display = 'block'; 
+    }, 8000);
 };
 
 // --- [프로필 & 캘린더] ---
