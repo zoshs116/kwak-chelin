@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>곽슐랭 - 과기대 맛집 가이드</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d5cd10e600e8a3778f9fde120043696a&libraries=services&autoload=false"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo" onclick="location.reload()" style="cursor: pointer;">
+                <span>🍳 곽슐랭</span>
+                <span class="logo-subtext" style="font-size: 0.5rem; opacity: 0.6; font-weight: 400;">누르면 새로고침</span>
+            </div>
+            <div id="authStatus" class="auth-status"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 1. Home View -->
+        <section id="homeView" class="view-section active">
+            <div class="main-layout">
+                <aside class="sidebar">
+                    <button id="themeToggleBtn" class="theme-main-btn">
+                        <span>✨ 테마별 추천</span>
+                        <i id="themeChevron" class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="activeThemeBadge" class="active-theme-badge" style="display: none;">
+                        <span id="selectedThemeName">🔍 테마</span>
+                        <i id="clearThemeBtn" class="fas fa-times"></i>
+                    </div>
+                    <div id="themeList" class="theme-list" style="display: none;">
+                        <button class="theme-btn" data-tag="데이트">👩‍❤️‍👨 데이트</button>
+                        <button class="theme-btn" data-tag="가족과 함께">👨‍👩‍👧‍👦 가족과 함께</button>
+                        <button class="theme-btn" data-tag="혼밥">🍱 혼밥</button>
+                        <button class="theme-btn" data-tag="친구와">🍻 친구와</button>
+                        <button class="theme-btn" data-tag="행사/뒷풀이">🎉 행사/뒷풀이</button>
+                        <button class="theme-btn" data-tag="공부">📖 공부</button>
+                    </div>
+                </aside>
+
+                <div class="content-area">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="식당 이름을 검색하세요">
+                    </div>
+                    <div class="sort-filters">
+                        <button class="sort-btn active" data-sort="distance">거리순</button>
+                        <button class="sort-btn" data-sort="rating">별점순</button>
+                        <button class="sort-btn" data-sort="review">리뷰순</button>
+                    </div>
+                    <div class="category-filters">
+                        <button class="cat-btn active" data-category="all">전체</button>
+                        <button class="cat-btn" data-category="한식">한식</button>
+                        <button class="cat-btn" data-category="양식">양식</button>
+                        <button class="cat-btn" data-category="중식">중식</button>
+                        <button class="cat-btn" data-category="일식">일식</button>
+                        <button class="cat-btn" data-category="치킨">치킨</button>
+                        <button class="cat-btn" data-category="분식">분식</button>
+                        <button class="cat-btn" data-category="술집">술집</button>
+                        <button class="cat-btn" data-category="카페">카페</button>
+                    </div>
+                    <div id="restaurantGrid" class="restaurant-grid"></div>
+                    <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                        <button class="load-more-btn" onclick="window.loadMore()">더보기</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Roulette View -->
+        <section id="rouletteView" class="view-section">
+            <div id="rouletteMain">
+                <div class="game-header-center">
+                    <h2>✨ 곽슐랭의<br>맛있는 메뉴 뽑기! ✨</h2>
+                    <p>오늘 뭐 먹을지 고민되나요?<br>귀여운 게임으로 메뉴를 정해봐요! 😋</p>
+                </div>
+                <div class="game-vertical-menu">
+                    <button class="game-large-btn wheel-gradient" onclick="openGame('makeWheel')">
+                        <span class="game-btn-emoji">🎡</span>
+                        <span class="game-btn-text">나만의 룰렛 만들기</span>
+                    </button>
+                    <button class="game-large-btn magic-gradient" onclick="openGame('recommend')">
+                        <span class="game-btn-emoji">🪄</span>
+                        <span class="game-btn-text">식당 랜덤 추천</span>
+                    </button>
+                    <button class="game-large-btn rps-gradient" onclick="openGame('rps')">
+                        <span class="game-btn-emoji">☕</span>
+                        <span class="game-btn-text">커피 내기 한 판</span>
+                    </button>
+                    <button class="game-large-btn beer-gradient" onclick="openGame('alcoholGame')">
+                        <span class="game-btn-emoji">🍺</span>
+                        <span class="game-btn-text">곽슐랭과 술 게임</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Subviews -->
+            <div id="game-makeWheel" class="game-subview" style="display:none;">
+                <button class="back-btn-new" onclick="backToGameMain()"><i class="fas fa-arrow-left"></i></button>
+                <div class="view-card roulette-container">
+                    <h3 style="text-align:center; margin-top:15px;">나만의 룰렛 만들기</h3>
+                    <div id="wheelInputs" class="wheel-input-grid"></div>
+                    
+                    <div id="wheelVisualArea" style="display:none; margin-top:20px;">
+                        <div class="wheel-visual-wrapper">
+                            <div class="wheel-pointer">▼</div>
+                            <canvas id="wheelCanvas" width="300" height="300"></canvas>
+                        </div>
+                        <div id="wheelResultWrapper" style="display:none; margin-top:20px; padding:20px; background:#f8fafc; border-radius:20px; border:2px solid #0f172a;">
+                            <div id="wheelResultName" style="font-size:1.5rem; font-weight:900; margin-bottom:10px; color:#0f172a;"></div>
+                            <div id="wheelResultInfo"></div>
+                        </div>
+                    </div>
+                    <button id="spinWheelBtn" class="premium-spin-btn"><span class="btn-text">🎡 돌리기!</span></button>
+                </div>
+            </div>
+
+            <div id="game-recommend" class="game-subview" style="display:none;">
+                <button class="back-btn-new" onclick="backToGameMain()"><i class="fas fa-arrow-left"></i></button>
+                <div class="view-card" style="text-align:center;">
+                    <h3 style="margin-bottom:20px;">🪄 곽슐랭 매직 추천</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin-bottom:15px;">카테고리를 고르고 마법의 추천을 받아보세요!</p>
+                    <div class="category-filters" style="justify-content:center; margin-bottom:20px;">
+                        <button class="rec-cat-btn cat-btn active" data-cat="all">전체</button>
+                        <button class="rec-cat-btn cat-btn" data-cat="한식">한식</button>
+                        <button class="rec-cat-btn cat-btn" data-cat="양식">양식</button>
+                        <button class="rec-cat-btn cat-btn" data-cat="중식">중식</button>
+                        <button class="rec-cat-btn cat-btn" data-cat="일식">일식</button>
+                    </div>
+                    <div id="recResult" style="min-height:80px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:900; color:#3b82f6; margin:20px 0; background:#f1f5f9; border-radius:15px;">?</div>
+                    <button id="recSpinBtn" class="premium-spin-btn" style="background:var(--accent-color);"><span class="btn-text">🪄 마법의 추천 받기</span></button>
+                    <div id="recDetail" style="display:none; margin-top:20px; padding:15px; border:2px dashed var(--border-color); border-radius:15px;"></div>
+                </div>
+            </div>
+
+            <div id="game-rps" class="game-subview" style="display:none;">
+                <button class="back-btn-new" onclick="backToGameMain()"><i class="fas fa-arrow-left"></i></button>
+                <div class="view-card" style="text-align:center;">
+                    <h3 style="margin-bottom:10px;">✌️ 커피 내기 가위바위보</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin-bottom:30px;">친구와 함께 가위바위보로 커피 한 잔 내기를 하세요!</p>
+                    <div id="rpsResult" style="height:150px; display:flex; align-items:center; justify-content:center; font-size:6rem; margin:20px auto; color:#0f172a; background:#f1f5f9; border-radius:50%; width:150px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s;"><i class="fas fa-question" style="color:#cbd5e1;"></i></div>
+                    <button onclick="playRPS()" class="premium-spin-btn" style="background:#6366f1; margin-top:30px;"><span class="btn-text">가위 바위 보!</span></button>
+                </div>
+            </div>
+
+            <div id="game-alcoholGame" class="game-subview" style="display:none;">
+                <button class="back-btn-new" onclick="backToGameMain()"><i class="fas fa-arrow-left"></i></button>
+                <div class="view-card" style="text-align:center;">
+                    <h3 style="margin-bottom:10px;">곽슐랭 진실게임</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin-bottom:30px;">핸드폰을 테이블 가운데에 두고 버튼을 눌러주세요!</p>
+                    <div class="soju-bottle-container">
+                        <div id="sojuBottle" class="soju-bottle" onclick="window.spinSoju()">
+                            <div class="bottle-pointer-arrow">▲</div>
+                            <div class="bottle-cap"></div>
+                            <div class="bottle-neck"></div>
+                            <div class="bottle-body">
+                                <div class="bottle-label">
+                                    <span class="label-text">곽슐랭</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sojuResult" class="soju-result-box" style="display:none;">
+                        <div class="result-badge">📢 벌칙 당첨!</div>
+                        <div class="result-msg">학우님, 이제 진실만 답해야 합니다.</div>
+                        <div class="punishment-text">벌칙: 소주 한 잔(풀잔) or 진실</div>
+                    </div>
+                    <button id="sojuSpinBtn" onclick="window.spinSoju()" class="premium-spin-btn" style="background:#52c41a; margin-top:20px;">
+                        <span class="btn-text">🍾 돌리기!</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Calendar View -->
+        <section id="calendarView" class="view-section">
+            <div class="view-card calendar-container">
+                <div id="calendarHeader" class="calendar-header"></div>
+                <div id="calendarGrid" class="calendar-grid"></div>
+            </div>
+            <div id="eventList" class="event-list"></div>
+        </section>
+
+        <!-- 4. Profile View -->
+        <section id="profileView" class="view-section">
+            <div class="profile-header-card view-card">
+                <div id="profileUserArea"></div>
+            </div>
+            <div class="profile-tabs view-card">
+                <div class="tab-menu">
+                    <button class="profile-tab-btn active" onclick="window.switchProfileTab('bookmarks')">저장한 식당</button>
+                    <button class="profile-tab-btn" onclick="window.switchProfileTab('reviews')">내가 쓴 리뷰</button>
+                </div>
+                <div id="profileTabContent" class="tab-content-area"></div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-view="homeView">
+            <i class="fas fa-house"></i>
+            <span>홈</span>
+        </div>
+        <div class="nav-item" data-view="rouletteView">
+            <i class="fas fa-gamepad"></i>
+            <span>게임</span>
+        </div>
+        <div class="nav-item" data-view="calendarView">
+            <i class="fas fa-calendar-alt"></i>
+            <span>캘린더</span>
+        </div>
+        <div class="nav-item" data-view="profileView">
+            <i class="fas fa-user"></i>
+            <span>프로필</span>
+        </div>
+    </nav>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <button id="bookmarkBtn" class="modal-bookmark-btn" onclick="window.toggleBookmark()">
+                <i class="far fa-bookmark"></i>
+            </button>
+            <span class="close" onclick="closeModal('detailModal')">&times;</span>
+            <div id="detailInfo"></div>
+            <div id="reviewSection">
+                <div class="review-header-flex">
+                    <h3>학생 리뷰</h3>
+                    <div class="review-sort-controls">
+                        <select onchange="window.sortReviews(this.value)" class="sort-select" style="padding: 4px 8px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.8rem; outline: none; cursor: pointer;">
+                            <option value="likes">추천순</option>
+                            <option value="desc">평점 높은순</option>
+                            <option value="asc">평점 낮은순</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="reviewList" class="review-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content" style="height:auto; margin:20vh 20px; border-radius:24px;">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="margin-bottom:20px;">로그인</h2>
+            <input type="text" id="loginId" placeholder="아이디" style="margin-bottom:10px;">
+            <input type="password" id="loginPw" placeholder="비밀번호" style="margin-bottom:20px;">
+            <button class="submit-btn" onclick="handleLogin()">로그인</button>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content" style="height:auto; margin:15vh 20px; border-radius:24px;">
+            <span class="close" onclick="closeModal('signupModal')">&times;</span>
+            <h2 style="margin-bottom:20px;">회원가입</h2>
+            <input type="text" id="signupId" placeholder="아이디" style="margin-bottom:10px;">
+            <input type="password" id="signupPw" placeholder="비밀번호" style="margin-bottom:10px;">
+            <div style="margin-bottom:20px;">
+                <input type="text" id="signupNickname" placeholder="닉네임" style="width:100%; margin-bottom:5px;">
+                <div id="signupNickMsg" style="font-size:0.75rem; color:#ef4444; display:none; padding-left:4px;">이미 사용 중인 닉네임입니다.</div>
+            </div>
+            <button class="submit-btn" onclick="handleSignup()">가입하기</button>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content" style="height:auto; margin:15vh 20px; border-radius:24px;">
+            <span class="close" onclick="closeModal('eventModal')">&times;</span>
+            <h2 id="eventModalTitle" style="margin-bottom:20px;">일정 추가</h2>
+            <input type="text" id="eventTitle" placeholder="일정 제목">
+            <textarea id="eventMemo" placeholder="상세 메모를 입력하세요 (선택)" style="width:100%; height:80px; padding:12px; border-radius:12px; border:1px solid #e2e8f0; margin:10px 0; resize:none; font-size:0.9rem;"></textarea>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px; font-size:0.85rem; color:#64748b;">
+                <input type="checkbox" id="eventRepeat" style="width:18px; height:18px; cursor:pointer;">
+                <label for="eventRepeat" style="cursor:pointer;">매주 반복</label>
+            </div>
+            <div class="color-picker" style="display:flex; gap:10px; margin:15px 0;">
+                <div class="color-opt active" data-color="#3b82f6" style="background:#3b82f6; width:30px; height:30px; border-radius:50%; cursor:pointer;"></div>
+                <div class="color-opt" data-color="#10b981" style="background:#10b981; width:30px; height:30px; border-radius:50%; cursor:pointer;"></div>
+                <div class="color-opt" data-color="#ef4444" style="background:#ef4444; width:30px; height:30px; border-radius:50%; cursor:pointer;"></div>
+                <div class="color-opt" data-color="#f59e0b" style="background:#f59e0b; width:30px; height:30px; border-radius:50%; cursor:pointer;"></div>
+            </div>
+            <button class="submit-btn" onclick="saveEvent()">저장하기</button>
+        </div>
+    </div>
+
+    <div id="topBtn" class="top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 홈 화면에 어플 설치 가이드 모달 -->
+    <div id="pwaGuideModal" class="pwa-guide-modal">
+        <div class="pwa-guide-content">
+            <h2 style="margin-bottom:15px; text-align:center; font-size:1.3rem;">📱 홈 화면에 어플 설치 가이드</h2>
+            <p style="text-align:center; font-size:0.85rem; color:#64748b; margin-bottom:20px;">10초 만에 끝나는 아주 간단한 설치 방법!</p>
+            
+            <div class="pwa-step">
+                <h4><i class="fab fa-android" style="color:#3ddc84;"></i> 안드로이드 (Android)</h4>
+                <p>1. <b>크롬(Chrome)</b> 브라우저에서 사이트 접속<br>
+                   2. 브라우저 하단 팝업의 <b>[홈 화면에 추가]</b> 클릭<br>
+                   3. 팝업이 없다면 우측 상단 <b>점 3개(⋮)</b> 메뉴 -> <b>[앱 설치]</b> 또는 <b>[홈 화면에 추가]</b> 클릭</p>
+            </div>
+
+            <div class="pwa-step">
+                <h4><i class="fab fa-apple" style="color:#000;"></i> 아이폰 (iOS)</h4>
+                <p>1. <b>사파리(Safari)</b> 브라우저에서 사이트 접속<br>
+                   2. 하단 바 가운데 <b>공유 버튼(↑)</b> 클릭<br>
+                   3. 리스트에서 <b>[홈 화면에 추가]</b> 클릭</p>
+            </div>
+
+            <div class="pwa-btn-group">
+                <button class="pwa-ignore-btn" onclick="window.hidePwaGuide(3)">3일 동안 보지 않기</button>
+                <button class="pwa-close-btn" onclick="window.hidePwaGuide(0)">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
