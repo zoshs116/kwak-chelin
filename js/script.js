@@ -619,6 +619,23 @@ async function updateAuthState(session) {
     } else authStatus.innerHTML = `<button onclick="window.openModal('loginModal')" class="auth-btn">로그인</button><button onclick="window.openModal('signupModal')" class="auth-btn signup">회원가입</button>`;
 }
 
+window.handleSignup = async () => {
+    const id = document.getElementById('signupId').value.trim();
+    const pw = document.getElementById('signupPw').value.trim();
+    const nickname = document.getElementById('signupNickname').value.trim();
+    if (!id || !pw || !nickname) return alert('모든 항목을 입력해주세요.');
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({ email: `${id}@dummy.com`, password: pw });
+        if (error) throw error;
+        if (data.user) {
+            const { error: profileError } = await supabaseClient.from('profiles').insert([{ id: data.user.id, nickname: nickname }]);
+            if (profileError) throw profileError;
+            alert('회원가입 성공! 이제 로그인해주세요.');
+            closeModal('signupModal');
+        }
+    } catch (e) { alert('회원가입 실패: ' + e.message); }
+};
+
 window.handleLogin = async () => {
     const id = document.getElementById('loginId').value; const pw = document.getElementById('loginPw').value;
     const { error } = await supabaseClient.auth.signInWithPassword({ email: `${id}@dummy.com`, password: pw });
