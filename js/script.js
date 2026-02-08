@@ -445,7 +445,7 @@ window.spinSoju = () => {
 
     // 2. 아주 짧은 지연(0.05초) 후 다시 돌리기 시작
     setTimeout(() => {
-        bottle.style.transition = 'transform 8s cubic-bezier(0.15, 0, 0.15, 1)';
+        bottle.style.transition = 'transform 10s cubic-bezier(0.15, 0, 0.15, 1)';
         const randomDegree = Math.floor(Math.random() * 360) + 3600;
         bottle.style.transform = `rotate(${randomDegree}deg)`;
     }, 50);
@@ -453,7 +453,7 @@ window.spinSoju = () => {
     // 3. 8초(회전 완료 시간) 후 결과창(벌칙) 표시
     setTimeout(() => { 
         result.style.display = 'block'; 
-    }, 8000);
+    }, 10000);
 };
 
 // --- [프로필 & 캘린더] ---
