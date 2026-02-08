@@ -176,10 +176,15 @@
                         <div class="result-badge">📢 벌칙 당첨!</div>
                         <div class="result-msg">학우님, 이제 진실만 답해야 합니다.</div>
                         <div class="punishment-text">벌칙: 소주 한 잔(풀잔) or 진실</div>
-                    </div>
-                    <button id="sojuSpinBtn" onclick="window.spinSoju()" class="premium-spin-btn" style="background:#52c41a; margin-top:20px;">
-                        <span class="btn-text">🍾 돌리기!</span>
+                        <!-- "한 판 더" 버튼 추가됨 -->
+                        <button onclick="window.spinSoju()" class="premium-spin-btn" style="background:#52c41a; margin-top:20px; width:100%;">
+                            <span class="btn-text">🔄 한 판 더!</span>
                     </button>
+                </div>
+
+                <button id="sojuSpinBtn" onclick="window.spinSoju()" class="premium-spin-btn" style="background:#52c41a; margin-top:20px;">
+                    <span class="btn-text">🍾 돌리기!</span>
+                </button>
                 </div>
             </div>
         </section>
