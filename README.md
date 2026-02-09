@@ -14,7 +14,3 @@ Frontend: HTML5, CSS3 (Premium Mobile UI), JavaScript (ES6+)
 Backend: Supabase (PostgreSQL, Auth, Real-time)
 APIs: Kakao Maps SDK, Kakao Local API
 Deployment: Vercel, PWA (Progressive Web App)
-5. 프로젝트의 차별점 
-사용자 중심 디자인: iPhone 12 Pro 해상도에 맞춘 'Mobile-First' 디자인과 'Cute & Clean' 톤앤매너.
-PWA 도입: 별도의 스토어 설치 없이 웹에서 앱으로 바로 전환되는 높은 접근성.
-로직의 정밀함: 룰렛 당첨 알고리즘, 주간 반복 일정 계산 로직 등 복잡한 프론트엔드 연동.
